@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"math"
 	"os"
@@ -14,8 +15,40 @@ const (
 	blue         = "\033[34m"
 	maxPlotWidth = 80
 	padding      = 2
-	usage        = "Usage: plot [-t title] [labels] , [values | file.csv] or plot [-t title] [values | file.csv]"
+	usage        = "Usage: plot [-t title] [labels] , values or plot [-t title] file.csv"
 )
+
+func readCSV(filename string) ([][]string, []string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	header := []string{}
+	// check if the first row contains ANY numbers, if so, it's not a header so leave it empty
+	hasHeader := true
+	for _, cell := range records[0] {
+
+		if _, err := strconv.ParseFloat(cell, 64); err == nil {
+			hasHeader = false
+			break
+		}
+	}
+	if hasHeader {
+		header = records[0]
+		records = records[1:]
+	}
+
+	return records, header, nil
+}
 
 func main() {
 	// check if arguments are passed
@@ -49,18 +82,55 @@ func main() {
 		}
 	}
 
-	if sepIndex != -1 {
-		// parse labels and values if separator is found
-		labels = os.Args[1:sepIndex]
-		valuesArgs = os.Args[sepIndex+1:]
-		if len(labels) != len(valuesArgs) {
-			fmt.Println("Number of labels and values must match. ")
-			fmt.Println("Recieved:", len(labels), "labels,", len(valuesArgs), "values")
+	// check if a csv file is passed, if so:
+	if strings.HasSuffix(os.Args[1], ".csv") {
+		records, _, err := readCSV(os.Args[1])
+		if err != nil {
+			fmt.Println("Error reading csv file:", err)
 			return
 		}
-	} else {
-		// parse only values if no separator is found
-		valuesArgs = os.Args[1:]
+		if len(records) < 2 {
+			fmt.Println("CSV file must have at least 2 rows")
+			return
+		}
+		// If first column, second row is a number, use column as values
+		if _, err := strconv.ParseFloat(records[1][0], 64); err == nil {
+
+			for _, row := range records {
+				value, err := strconv.ParseFloat(row[0], 64)
+				if err != nil {
+					fmt.Println("Error parsing value:", err)
+					return
+				}
+				values = append(values, value)
+			}
+		} else {
+			// use first column as labels and second column as values
+			for _, row := range records {
+				labels = append(labels, row[0])
+				value, err := strconv.ParseFloat(row[1], 64)
+				if err != nil {
+					fmt.Println("Error parsing value:", err)
+					fmt.Println("Either first or second column of CSV file must contain numbers")
+					return
+				}
+				values = append(values, value)
+			}
+		}
+	} else { // if no csv file is passed, parse arguments as labels and values
+		if sepIndex != -1 {
+			// parse labels and values if separator is found
+			labels = os.Args[1:sepIndex]
+			valuesArgs = os.Args[sepIndex+1:]
+			if len(labels) != len(valuesArgs) {
+				fmt.Println("Number of labels and values must match. ")
+				fmt.Println("Received:", len(labels), "labels,", len(valuesArgs), "values")
+				return
+			}
+		} else {
+			// parse only values if no separator is found
+			valuesArgs = os.Args[1:]
+		}
 	}
 
 	// convert values to floats
