@@ -24,7 +24,7 @@ func main() {
 	// initialize variables
 	var title string
 	var labels []string
-	var values []int
+	var values []float64
 	var valuesArgs []string
 
 	// check if a title flag is passed
@@ -59,9 +59,9 @@ func main() {
 		valuesArgs = os.Args[1:]
 	}
 
-	// convert values to integers
+	// convert values to floats
 	for _, arg := range valuesArgs {
-		value, err := strconv.Atoi(arg)
+		value, err := strconv.ParseFloat(arg, 64)
 		if err != nil {
 			fmt.Printf("invalid number: %s\n", arg)
 			fmt.Println("usage: go run main.go [labels] , [values] or go run main.go [values]")
@@ -87,7 +87,7 @@ func main() {
 }
 
 // plot function to display the barchart
-func plot(values []int, labels []string, width int) {
+func plot(values []float64, labels []string, width int) {
 	hasLabels := len(labels) > 0
 
 	maxLabelLen := 0
@@ -98,7 +98,7 @@ func plot(values []int, labels []string, width int) {
 	}
 
 	// find the maximum value
-	maxValue := 0
+	maxValue := 0.0
 	for _, value := range values {
 		if value > maxValue {
 			maxValue = value
@@ -109,9 +109,9 @@ func plot(values []int, labels []string, width int) {
 	chartWidth :=
 		width -
 			maxLabelLen -
-			// the length of the value label
-			int(math.Log10(float64(maxValue))+0.5) -
-			// the padding
+			// the length of the value label, assuming rounded to int
+			int(math.Log10(float64(maxValue+0.5))+1) -
+			// axis and padding
 			2
 
 	// calculate the scale factor for the values by dividing the maximum value by the terminal width, accounting for the label length and the value label length
@@ -134,8 +134,8 @@ func plot(values []int, labels []string, width int) {
 			fmt.Print("■")
 		}
 		fmt.Print(reset)
-		// print the value
-		fmt.Printf(" %d\n", value)
+		// print the value, rounded to the nearest int
+		fmt.Printf(" %d\n", int(value+0.5))
 	}
 }
 

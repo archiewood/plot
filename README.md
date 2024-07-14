@@ -4,7 +4,9 @@ A CLI tool to plot data in the terminal.
 
 ## Usage
 
+```bash
 plot [-t "title"] [labels,] data
+```
 
 ### Bar Chart with Title and Labels
 
