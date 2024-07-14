@@ -1,5 +1,7 @@
 # Plot
 
+![Plotting a CSV file](docs/csv.gif)
+
 A minimalist CLI tool to plot data to the terminal.
 
 - Data: Plot data from CSV files or command line arguments.
