@@ -10,8 +10,10 @@ import (
 )
 
 const (
-	reset = "\033[0m"
-	blue  = "\033[34m"
+	reset        = "\033[0m"
+	blue         = "\033[34m"
+	maxPlotWidth = 80
+	padding      = 2
 )
 
 func main() {
@@ -75,15 +77,16 @@ func main() {
 		fmt.Println(title)
 	}
 
-	// get terminal width
+	// get plot width
 	termWidth, err := getTerminalWidth()
+	plotWidth := min(termWidth, maxPlotWidth)
 	if err != nil {
 		fmt.Printf("could not determine terminal width: %s\n", err)
 		return
 	}
 
 	// plot the barchart
-	plot(values, labels, termWidth)
+	plot(values, labels, plotWidth)
 }
 
 // plot function to display the barchart
@@ -112,7 +115,7 @@ func plot(values []float64, labels []string, width int) {
 			// the length of the value label, assuming rounded to int
 			int(math.Log10(float64(maxValue+0.5))+1) -
 			// axis and padding
-			2
+			padding
 
 	// calculate the scale factor for the values by dividing the maximum value by the terminal width, accounting for the label length and the value label length
 	scale := float64(maxValue) / float64(chartWidth)
