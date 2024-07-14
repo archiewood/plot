@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+const (
+	reset = "\033[0m"
+	blue  = "\033[34m"
+)
+
 func main() {
 	// check if arguments are passed
 	if len(os.Args) < 2 {
@@ -109,11 +114,6 @@ func plot(values []int, labels []string, width int) {
 			// the padding
 			2
 
-	fmt.Print("termWidth:", width, "=\n")
-	for j := 0; j < width; j++ {
-		fmt.Print("■")
-	}
-
 	// calculate the scale factor for the values by dividing the maximum value by the terminal width, accounting for the label length and the value label length
 	scale := float64(maxValue) / float64(chartWidth)
 
@@ -129,9 +129,11 @@ func plot(values []int, labels []string, width int) {
 		// calculate the number of blocks to, rounding the value to the nearest integer
 		scaledValue := int(float64(value)/scale + 0.5)
 
+		fmt.Print(blue)
 		for j := 0; j < scaledValue; j++ {
 			fmt.Print("■")
 		}
+		fmt.Print(reset)
 		// print the value
 		fmt.Printf(" %d\n", value)
 	}
