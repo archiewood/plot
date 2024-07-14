@@ -2,9 +2,8 @@
 
 A minimalist CLI tool to plot data to the terminal.
 
-Plot data from CSV files or command line arguments.
-Currently support bar charts.
-
+- Data: Plot data from CSV files or command line arguments.
+- Charts: Currently only support bar charts.
 
 ## Usage
 
