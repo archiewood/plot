@@ -5,6 +5,22 @@ A minimalist CLI tool to plot data to the terminal.
 - Data: Plot data from CSV files or command line arguments.
 - Charts: Currently only support bar charts.
 
+## Installation
+
+1. Download the [latest release for your OS](https://github.com/archiewood/plot/releases).
+2. Move the binary to a directory in your PATH e.g. `mv plot-darwin-amd64 /usr/local/bin/plot` (May need sudo)
+3. Make the binary executable e.g. `chmod +x /usr/local/bin/plot` 
+4. Allow the binary to run by adding it to the list of allowed binaries e.g. `xattr -d com.apple.quarantine /usr/local/bin/plot`
+
+### MacOS
+
+```bash
+curl -L -o plot https://github.com/archiewood/plot/releases/download/v0.0.1/plot-darwin-amd64
+mv plot /usr/local/bin/
+chmod +x /usr/local/bin/plot
+xattr -d com.apple.quarantine /usr/local/bin/plot
+```
+
 ## Usage
 
 ```bash
