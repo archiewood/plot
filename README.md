@@ -1,13 +1,22 @@
 # Plot
 
-A CLI tool to plot data to the terminal.
+A minimalist CLI tool to plot data to the terminal.
 
+Plot data from CSV files or command line arguments.
 Currently support bar charts.
+
 
 ## Usage
 
 ```bash
-plot [-t "title"] [labels,] data
+plot [-t title] file.csv
+plot [-t title] [labels ,]  values
+```
+
+### Bar Chart from CSV
+
+```bash
+plot test/two_col_header.csv
 ```
 
 ### Bar Chart with Title and Labels
@@ -16,11 +25,6 @@ plot [-t "title"] [labels,] data
 plot -t "Programming Languages" go python r c++ , 84 950 923 27
 ```
 
-### Bar Chart from CSV
-
-```bash
-plot test/two_col_header.csv
-```
 
 ## Credits
 
