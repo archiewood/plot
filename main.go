@@ -13,9 +13,13 @@ import (
 const (
 	reset        = "\033[0m"
 	blue         = "\033[34m"
+	bold         = "\033[1m"
 	maxPlotWidth = 80
 	padding      = 2
-	usage        = "Usage: plot [-t title] [labels] , values or plot [-t title] file.csv"
+	usage        = `
+Usage: 
+1. plot [-t title] file.csv
+2. plot [-t title] [labels ,]  values`
 )
 
 func readCSV(filename string) ([][]string, []string, error) {
@@ -146,7 +150,10 @@ func main() {
 
 	// print the title if provided
 	if title != "" {
+		fmt.Print(bold)
 		fmt.Println(title)
+		fmt.Print(reset)
+		fmt.Println()
 	}
 
 	// get plot width
@@ -188,6 +195,9 @@ func plot(values []float64, labels []string, width int) {
 			int(math.Log10(float64(maxValue+0.5))+1) -
 			// axis and padding
 			padding
+	if chartWidth < 1 {
+		fmt.Println("Warning: Labels are too long to display chart values")
+	}
 
 	// calculate the scale factor for the values by dividing the maximum value by the terminal width, accounting for the label length and the value label length
 	scale := float64(maxValue) / float64(chartWidth)
@@ -212,6 +222,7 @@ func plot(values []float64, labels []string, width int) {
 		// print the value, rounded to the nearest int
 		fmt.Printf(" %d\n", int(value+0.5))
 	}
+	fmt.Println()
 }
 
 func getTerminalWidth() (int, error) {
