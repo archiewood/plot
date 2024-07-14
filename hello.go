@@ -74,11 +74,19 @@ func main() {
 // plot function to display the barchart
 func plot(values []int, labels []string) {
 	hasLabels := len(labels) > 0
+
+	maxLabelLen := 0
+	for _, label := range labels {
+		if len(label) > maxLabelLen {
+			maxLabelLen = len(label)
+		}
+	}
+
 	for i, value := range values {
 		if hasLabels {
 			label := labels[i]
-			// print the label
-			fmt.Printf("%-7s│", label)
+			// print the label, using the max label length
+			fmt.Printf("% *s │", maxLabelLen, label)
 		} else {
 			fmt.Print("│")
 		}
