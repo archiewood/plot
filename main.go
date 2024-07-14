@@ -14,12 +14,13 @@ const (
 	blue         = "\033[34m"
 	maxPlotWidth = 80
 	padding      = 2
+	usage        = "Usage: plot [-t title] [labels] , [values | file.csv] or plot [-t title] [values | file.csv]"
 )
 
 func main() {
 	// check if arguments are passed
 	if len(os.Args) < 2 {
-		fmt.Println("usage: plot [-t title] [labels] , [values] or plot [-t title] [values]")
+		fmt.Println(usage)
 		return
 	}
 
@@ -32,7 +33,7 @@ func main() {
 	// check if a title flag is passed
 	if os.Args[1] == "-t" {
 		if len(os.Args) < 4 {
-			fmt.Println("usage: plot -t [title] [labels] , [values] or plot -t [title] [values]")
+			fmt.Println(usage)
 			return
 		}
 		title = os.Args[2]
@@ -53,7 +54,8 @@ func main() {
 		labels = os.Args[1:sepIndex]
 		valuesArgs = os.Args[sepIndex+1:]
 		if len(labels) != len(valuesArgs) {
-			fmt.Println("the number of labels and values must be the same")
+			fmt.Println("Number of labels and values must match. ")
+			fmt.Println("Recieved:", len(labels), "labels,", len(valuesArgs), "values")
 			return
 		}
 	} else {
@@ -66,7 +68,7 @@ func main() {
 		value, err := strconv.ParseFloat(arg, 64)
 		if err != nil {
 			fmt.Printf("invalid number: %s\n", arg)
-			fmt.Println("usage: plot [labels] , [values] or plot [values]")
+			fmt.Println(usage)
 			return
 		}
 		values = append(values, value)
