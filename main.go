@@ -19,7 +19,7 @@ const (
 func main() {
 	// check if arguments are passed
 	if len(os.Args) < 2 {
-		fmt.Println("usage: go run main.go [-t title] [labels] , [values] or go run main.go [-t title] [values]")
+		fmt.Println("usage: plot [-t title] [labels] , [values] or plot [-t title] [values]")
 		return
 	}
 
@@ -32,7 +32,7 @@ func main() {
 	// check if a title flag is passed
 	if os.Args[1] == "-t" {
 		if len(os.Args) < 4 {
-			fmt.Println("usage: go run main.go -t [title] [labels] , [values] or go run main.go -t [title] [values]")
+			fmt.Println("usage: plot -t [title] [labels] , [values] or plot -t [title] [values]")
 			return
 		}
 		title = os.Args[2]
@@ -66,7 +66,7 @@ func main() {
 		value, err := strconv.ParseFloat(arg, 64)
 		if err != nil {
 			fmt.Printf("invalid number: %s\n", arg)
-			fmt.Println("usage: go run main.go [labels] , [values] or go run main.go [values]")
+			fmt.Println("usage: plot [labels] , [values] or plot [values]")
 			return
 		}
 		values = append(values, value)
