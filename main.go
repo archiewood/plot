@@ -31,16 +31,13 @@ func readCSV(filename string) ([][]string, []string, error) {
 
 	reader := csv.NewReader(file)
 	records, err := reader.ReadAll()
-
 	if err != nil {
 		return nil, nil, err
 	}
 
 	header := []string{}
-	// check if the first row contains ANY numbers, if so, it's not a header so leave it empty
 	hasHeader := true
 	for _, cell := range records[0] {
-
 		if _, err := strconv.ParseFloat(cell, 64); err == nil {
 			hasHeader = false
 			break
@@ -54,124 +51,83 @@ func readCSV(filename string) ([][]string, []string, error) {
 	return records, header, nil
 }
 
-func main() {
-	// check if arguments are passed
-	if len(os.Args) < 2 {
-		fmt.Println(usage)
-		return
-	}
-
-	// initialize variables
+func parseArgs(args []string) (string, []string, []float64, error) {
 	var title string
 	var labels []string
 	var values []float64
 	var valuesArgs []string
 
-	// check if a title flag is passed
-	if os.Args[1] == "-t" {
-		if len(os.Args) < 4 {
-			fmt.Println(usage)
-			return
-		}
-		title = os.Args[2]
-		os.Args = append(os.Args[:1], os.Args[3:]...)
+	if len(args) < 1 {
+		return "", nil, nil, fmt.Errorf(usage)
 	}
 
-	// find the separator index
+	if args[0] == "-t" {
+		if len(args) < 3 {
+			return "", nil, nil, fmt.Errorf(usage)
+		}
+		title = args[1]
+		args = args[2:]
+	}
+
 	sepIndex := -1
-	for i, arg := range os.Args {
+	for i, arg := range args {
 		if arg == "," {
 			sepIndex = i
 			break
 		}
 	}
 
-	// check if a csv file is passed, if so:
-	if strings.HasSuffix(os.Args[1], ".csv") {
-		records, _, err := readCSV(os.Args[1])
+	if strings.HasSuffix(args[0], ".csv") {
+		records, _, err := readCSV(args[0])
 		if err != nil {
-			fmt.Println("Error reading csv file:", err)
-			return
+			return "", nil, nil, fmt.Errorf("Error reading csv file: %v", err)
 		}
 		if len(records) < 2 {
-			fmt.Println("CSV file must have at least 2 rows")
-			return
+			return "", nil, nil, fmt.Errorf("CSV file must have at least 2 rows")
 		}
-		// If first column, second row is a number, use column as values
 		if _, err := strconv.ParseFloat(records[1][0], 64); err == nil {
-
 			for _, row := range records {
 				value, err := strconv.ParseFloat(row[0], 64)
 				if err != nil {
-					fmt.Println("Error parsing value:", err)
-					return
+					return "", nil, nil, fmt.Errorf("Error parsing value: %v", err)
 				}
 				values = append(values, value)
 			}
 		} else {
-			// use first column as labels and second column as values
 			for _, row := range records {
 				labels = append(labels, row[0])
 				value, err := strconv.ParseFloat(row[1], 64)
 				if err != nil {
-					fmt.Println("Error parsing value:", err)
-					fmt.Println("Either first or second column of CSV file must contain numbers")
-					return
+					return "", nil, nil, fmt.Errorf("Error parsing value: %v", err)
 				}
 				values = append(values, value)
 			}
 		}
-	} else { // if no csv file is passed, parse arguments as labels and values
+	} else {
 		if sepIndex != -1 {
-			// parse labels and values if separator is found
-			labels = os.Args[1:sepIndex]
-			valuesArgs = os.Args[sepIndex+1:]
+			labels = args[:sepIndex]
+			valuesArgs = args[sepIndex+1:]
 			if len(labels) != len(valuesArgs) {
-				fmt.Println("Number of labels and values must match. ")
-				fmt.Println("Received:", len(labels), "labels,", len(valuesArgs), "values")
-				return
+				return "", nil, nil, fmt.Errorf("Number of labels and values must match. Received: %d labels, %d values", len(labels), len(valuesArgs))
 			}
 		} else {
-			// parse only values if no separator is found
-			valuesArgs = os.Args[1:]
+			valuesArgs = args
 		}
 	}
 
-	// convert values to floats
 	for _, arg := range valuesArgs {
 		value, err := strconv.ParseFloat(arg, 64)
 		if err != nil {
-			fmt.Printf("invalid number: %s\n", arg)
-			fmt.Println(usage)
-			return
+			return "", nil, nil, fmt.Errorf("Invalid number: %s\n%s", arg, usage)
 		}
 		values = append(values, value)
 	}
 
-	// print the title if provided
-	if title != "" {
-		fmt.Print(bold)
-		fmt.Println(title)
-		fmt.Print(reset)
-		fmt.Println()
-	}
-
-	// get plot width
-	termWidth, err := getTerminalWidth()
-	plotWidth := min(termWidth, maxPlotWidth)
-	if err != nil {
-		fmt.Printf("could not determine terminal width: %s\n", err)
-		return
-	}
-
-	// plot the barchart
-	plot(values, labels, plotWidth)
+	return title, labels, values, nil
 }
 
-// plot function to display the barchart
 func plot(values []float64, labels []string, width int) {
 	hasLabels := len(labels) > 0
-
 	maxLabelLen := 0
 	for _, label := range labels {
 		if len(label) > maxLabelLen {
@@ -179,7 +135,6 @@ func plot(values []float64, labels []string, width int) {
 		}
 	}
 
-	// find the maximum value
 	maxValue := 0.0
 	for _, value := range values {
 		if value > maxValue {
@@ -187,39 +142,26 @@ func plot(values []float64, labels []string, width int) {
 		}
 	}
 
-	// find the width available for the bars
-	chartWidth :=
-		width -
-			maxLabelLen -
-			// the length of the value label, assuming rounded to int
-			int(math.Log10(float64(maxValue+0.5))+1) -
-			// axis and padding
-			padding
+	chartWidth := width - maxLabelLen - int(math.Log10(float64(maxValue+0.5))+1) - padding
 	if chartWidth < 1 {
-		fmt.Println("Warning: Labels are too long to display chart values")
+		fmt.Println("Warning: labels too long to display chart values")
 	}
 
-	// calculate the scale factor for the values by dividing the maximum value by the terminal width, accounting for the label length and the value label length
 	scale := float64(maxValue) / float64(chartWidth)
 
 	for i, value := range values {
 		if hasLabels {
-			label := labels[i]
-			// print the label, using the max label length
-			fmt.Printf("% *s│", maxLabelLen, label)
+			fmt.Printf("% *s│", maxLabelLen, labels[i])
 		} else {
 			fmt.Print("│")
 		}
 
-		// calculate the number of blocks to, rounding the value to the nearest integer
 		scaledValue := int(float64(value)/scale + 0.5)
-
 		fmt.Print(blue)
 		for j := 0; j < scaledValue; j++ {
 			fmt.Print("■")
 		}
 		fmt.Print(reset)
-		// print the value, rounded to the nearest int
 		fmt.Printf(" %d\n", int(value+0.5))
 	}
 	fmt.Println()
@@ -238,4 +180,28 @@ func getTerminalWidth() (int, error) {
 		return 0, err
 	}
 	return width, nil
+}
+
+func main() {
+	title, labels, values, err := parseArgs(os.Args[1:])
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if title != "" {
+		fmt.Print(bold)
+		fmt.Println(title)
+		fmt.Print(reset)
+		fmt.Println()
+	}
+
+	termWidth, err := getTerminalWidth()
+	plotWidth := min(termWidth, maxPlotWidth)
+	if err != nil {
+		fmt.Printf("Could not determine terminal width: %s\n", err)
+		return
+	}
+
+	plot(values, labels, plotWidth)
 }
