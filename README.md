@@ -12,7 +12,7 @@ A minimalist CLI tool to plot data to the terminal.
 1. Download the [latest release for your OS](https://github.com/archiewood/plot/releases).
 2. Move the binary to a directory in your PATH e.g. `mv plot-darwin-amd64 /usr/local/bin/plot` (May need sudo)
 3. Make the binary executable e.g. `chmod +x /usr/local/bin/plot` 
-4. Allow the binary to run by adding it to the list of allowed binaries e.g. `xattr -d com.apple.quarantine /usr/local/bin/plot`
+4. Adding plot to the list of allowed binaries e.g. `xattr -d com.apple.quarantine /usr/local/bin/plot`
 
 ### MacOS
 
