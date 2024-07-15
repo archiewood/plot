@@ -1,11 +1,11 @@
 # Plot
 
-![Plotting a CSV file](docs/csv.gif)
-
 A minimalist CLI tool to plot data to the terminal.
 
-- Data: Plot data from CSV files or command line arguments.
-- Charts: Currently only support bar charts.
+<img src="docs/csv.gif" width="400">
+
+- **Data**: From CSV files or command line arguments.
+- **Charts**: Currently only bar charts.
 
 ## Installation
 
