@@ -80,16 +80,16 @@ func parseArgs(args []string) (string, []string, []float64, error) {
 	if strings.HasSuffix(args[0], ".csv") {
 		records, _, err := readCSV(args[0])
 		if err != nil {
-			return "", nil, nil, fmt.Errorf("Error reading csv file: %v", err)
+			return "", nil, nil, fmt.Errorf("error reading csv file: %v", err)
 		}
 		if len(records) < 2 {
-			return "", nil, nil, fmt.Errorf("CSV file must have at least 2 rows")
+			return "", nil, nil, fmt.Errorf("csv file must have at least 2 rows")
 		}
 		if _, err := strconv.ParseFloat(records[1][0], 64); err == nil {
 			for _, row := range records {
 				value, err := strconv.ParseFloat(row[0], 64)
 				if err != nil {
-					return "", nil, nil, fmt.Errorf("Error parsing value: %v", err)
+					return "", nil, nil, fmt.Errorf("error parsing value: %v", err)
 				}
 				values = append(values, value)
 			}
@@ -98,7 +98,7 @@ func parseArgs(args []string) (string, []string, []float64, error) {
 				labels = append(labels, row[0])
 				value, err := strconv.ParseFloat(row[1], 64)
 				if err != nil {
-					return "", nil, nil, fmt.Errorf("Error parsing value: %v", err)
+					return "", nil, nil, fmt.Errorf("error parsing value: %v", err)
 				}
 				values = append(values, value)
 			}
@@ -108,7 +108,7 @@ func parseArgs(args []string) (string, []string, []float64, error) {
 			labels = args[:sepIndex]
 			valuesArgs = args[sepIndex+1:]
 			if len(labels) != len(valuesArgs) {
-				return "", nil, nil, fmt.Errorf("Number of labels and values must match. Received: %d labels, %d values", len(labels), len(valuesArgs))
+				return "", nil, nil, fmt.Errorf("number of labels and values must match. received: %d labels, %d values", len(labels), len(valuesArgs))
 			}
 		} else {
 			valuesArgs = args
@@ -118,7 +118,7 @@ func parseArgs(args []string) (string, []string, []float64, error) {
 	for _, arg := range valuesArgs {
 		value, err := strconv.ParseFloat(arg, 64)
 		if err != nil {
-			return "", nil, nil, fmt.Errorf("Invalid number: %s\n%s", arg, usage)
+			return "", nil, nil, fmt.Errorf("invalid number: %s\n%s", arg, usage)
 		}
 		values = append(values, value)
 	}
@@ -144,7 +144,7 @@ func plot(values []float64, labels []string, width int) {
 
 	chartWidth := width - maxLabelLen - int(math.Log10(float64(maxValue+0.5))+1) - padding
 	if chartWidth < 1 {
-		fmt.Println("Warning: labels too long to display chart values")
+		fmt.Println("warning: labels are too long to display chart values")
 	}
 
 	scale := float64(maxValue) / float64(chartWidth)
@@ -199,7 +199,7 @@ func main() {
 	termWidth, err := getTerminalWidth()
 	plotWidth := min(termWidth, maxPlotWidth)
 	if err != nil {
-		fmt.Printf("Could not determine terminal width: %s\n", err)
+		fmt.Printf("could not determine terminal width: %s\n", err)
 		return
 	}
 
