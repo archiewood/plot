@@ -15,7 +15,7 @@ const (
 	blue          = "\033[34m"
 	bold          = "\033[1m"
 	maxPlotWidth  = 800
-	maxPlotHeight = 10
+	maxPlotHeight = 20
 	paddingWidth  = 2
 	paddingHeight = 2
 	usage         = `
