@@ -17,7 +17,8 @@ const (
 	maxPlotWidth  = 800
 	maxPlotHeight = 20
 	paddingWidth  = 2
-	paddingHeight = 2
+	paddingHeight = 3
+	titleHeight   = 2
 	usage         = `
 Usage: 
 1. plot [-t title] [-c chartType] file.csv
@@ -152,6 +153,7 @@ func parseArgs(args []string) (string, string, []string, []float64, error) {
 }
 
 func plot(values []float64, labels []string, width int, height int, chartType string) {
+	fmt.Println()
 	maxLabelLen := 0
 	for _, label := range labels {
 		if len(label) > maxLabelLen {
@@ -334,15 +336,20 @@ func main() {
 	}
 
 	if title != "" {
+		fmt.Println()
 		fmt.Print(bold)
 		fmt.Println(title)
 		fmt.Print(reset)
-		fmt.Println()
 	}
 
 	termWidth, termHeight, err := getTerminalSize()
 	plotWidth := min(termWidth, maxPlotWidth)
-	plotHeight := min(termHeight, maxPlotHeight)
+	var plotHeight int
+	if title != "" {
+		plotHeight = min(termHeight, maxPlotHeight) - paddingHeight - titleHeight
+	} else {
+		plotHeight = min(termHeight, maxPlotHeight) - paddingHeight
+	}
 	if err != nil {
 		fmt.Printf("could not determine terminal size: %s\n", err)
 		return
