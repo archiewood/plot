@@ -5,7 +5,7 @@ A minimalist CLI tool to plot data to the terminal.
 <img src="docs/csv.gif" width="400">
 
 - **Data**: From CSV files or command line arguments.
-- **Charts**: Currently only bar charts.
+- **Charts**: Bar and Column charts.
 
 ## Installation
 
@@ -14,10 +14,10 @@ A minimalist CLI tool to plot data to the terminal.
 3. Make the binary executable e.g. `chmod +x /usr/local/bin/plot` 
 4. Adding plot to the list of allowed binaries e.g. `xattr -d com.apple.quarantine /usr/local/bin/plot`
 
-### MacOS
+### MacOS Install
 
 ```bash
-curl -L -o plot https://github.com/archiewood/plot/releases/download/v0.0.1/plot-darwin-amd64
+curl -L -o plot https://github.com/archiewood/plot/releases/download/v0.0.2/plot-darwin-amd64
 mv plot /usr/local/bin/
 chmod +x /usr/local/bin/plot
 xattr -d com.apple.quarantine /usr/local/bin/plot
@@ -26,8 +26,8 @@ xattr -d com.apple.quarantine /usr/local/bin/plot
 ## Usage
 
 ```bash
-plot [-t title] file.csv
-plot [-t title] [labels ,]  values
+plot [-t title] [-c chartType] file.csv
+plot [-t title] [-c chartType] [labels ,]  values
 ```
 
 ### Bar Chart from CSV
@@ -42,6 +42,11 @@ plot test/two_col_header.csv
 plot -t "Programming Languages" go python r c++ , 84 950 923 27
 ```
 
+### Column Chart
+
+```bash
+plot -c column test/two_col_header.csv
+```
 
 ## Credits
 
